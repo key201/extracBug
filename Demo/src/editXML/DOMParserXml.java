@@ -1,10 +1,13 @@
 package editXML;
 
 import java.util.regex.*;
+
 import java.io.File;
 import java.io.IOException;
-
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.w3c.dom.Document;
@@ -104,19 +107,33 @@ public class DOMParserXml {
     		 if (subtextnode.getNodeName().equals("paths"))
 	           {
 	        	   //遍历所有的path	        	   
-	        	   NodeList pathnodes = subtextnode.getChildNodes();
-	        	   for(int k=0; k<pathnodes.getLength();k++){
+	        	   Node pathnode = subtextnode.getFirstChild();
+	        	   //for(int k=0; k<pathnodes.getLength();k++)
+	        	   while(pathnode!=null)
+	        	   {
 	        		   
-	        		   Node tmpNode= pathnodes.item(k);//这儿的注释还要去掉的
-	        		   if (tmpNode.getNodeType() == Node.ELEMENT_NODE)
+	        		   //Node tmpNode= pathnodes.item(k);//这儿的注释还要去掉的
+	        		   
+	        		   Node tmpNode = pathnode.getFirstChild();
+	        		   while(tmpNode!=null){
+	        		   List<codeModInfos> listPaths = new ArrayList<codeModInfos>();
+	        		   
+	        		   if (pathnode.getNodeType() == Node.ELEMENT_NODE)
 	        		   {
 	        			   codeModInfos modifyInfo = new codeModInfos();
-	        			   modifyInfo.setModifyAction(((Element)tmpNode).getAttribute("action"));
-	        			   modifyInfo.setFileType(((Element)tmpNode).getAttribute("kind"));
-	        			   modifyInfo.setProp_mods(((Element)tmpNode).getAttribute("prop-mods"));
-	        			   modifyInfo.setText_mods(((Element)tmpNode).getAttribute("text-mods"));
-	        			   modifyInfo.setModifyMsg(((Element)tmpNode).getTextContent());	        			   
+	        			   modifyInfo.setModifyAction(((Element)pathnode).getAttribute("action"));
+	        			   modifyInfo.setFileType(((Element)pathnode).getAttribute("kind"));
+	        			   modifyInfo.setProp_mods(((Element)pathnode).getAttribute("prop-mods"));
+	        			   modifyInfo.setText_mods(((Element)pathnode).getAttribute("text-mods"));
+	        			   modifyInfo.setModifyMsg(((Element)pathnode).getTextContent());
+	        			   String strpathText = ((Element)pathnode).getTextContent();
+	        			   if (!strpathText.contains("changelog.xml"))     				   
+	        			   listPaths.add(modifyInfo);
 	        		   }
+	        		   indvalInfo.setModifyPath(listPaths);
+	        		   tmpNode = tmpNode.getNextSibling();
+	        		   }
+	        		   pathnode = pathnode.getNextSibling();
 	        	   }
 	           }
     	 }    	 
@@ -210,6 +227,13 @@ public class DOMParserXml {
      	if(infoKeyValue.getBugId()!=null){
      		System.out.println(infoKeyValue.getBugId()+"----->"+infoKeyValue.getmodifyRevision());
      		bugIdCount++;
+     		List<codeModInfos> listPath= infoKeyValue.getmodifyPathList();
+     		Iterator<codeModInfos> iter = listPath.iterator();
+     		while (iter.hasNext())
+    		{
+     			codeModInfos codeInfo = iter.next();
+    			System.out.println(codeInfo.getModifyMsg());
+    		}
      	}
      	else
      	{

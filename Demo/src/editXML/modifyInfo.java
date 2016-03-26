@@ -55,7 +55,7 @@ public class modifyInfo {
 	public void setmodifyMessage(String modifyMessage) {
 		this.modifyMessage = modifyMessage;
 	}
-	public void setmodifyMessage(List<codeModInfos> lsmodifyPath) {
+	public void setModifyPath(List<codeModInfos> lsmodifyPath) {
 		this.lsmodifyPath = lsmodifyPath;
 	}
 	public void setBugInformation(String bugInformation) {
